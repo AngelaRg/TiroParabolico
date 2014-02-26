@@ -36,6 +36,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private Graphics dbg;	// Objeto grafico
     private Color c; //para color de strings
     private Image fondo;	//Imagen de fondo del JFrame
+    private boolean pausa; // bandera para manejar la pausa
+    private Nube nubecita; // nube del juego
+    private Barco barquito; // barco del juego
     
     //Constructor (aqui se pone todo lo del init)
     public Principal () {
@@ -50,6 +53,13 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         //FONDO
         //Carga la imagen de fondo
         fondo = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("fondo/imagenmar.jpg"));
+        
+        pausa = false;
+        
+        nubecita = new Nube ( 20 , getHeight()/2);
+        
+        barquito = new Barco (getWidth()/2, getHeight()/2);
+        
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -66,10 +76,10 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         while (true) {
 
             //si esta pausado no actualizas ni checas colision 
-            //if (!pausa) {
+            if (!pausa) {
                 actualiza();
                 checaColision();
-            //}
+            }
             repaint(); // Se actualiza el <code>Applet</code> repintando el contenido.
             try {
                 // El thread se duerme.
@@ -87,7 +97,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         //Guarda el tiempo actual
         tiempoActual += tiempoTranscurrido;
-        //togepi.actualiza(tiempoActual);
+        nubecita.actualiza(tiempoActual);
+        barquito.actualiza(tiempoActual);
         
     }
     
@@ -98,17 +109,19 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
     @Override
     public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (e.getKeyCode() == KeyEvent.VK_P) {    //Presiono flecha arriba
+            pausa = !pausa;
+        } // cambia la bandera de pausa si se presiona la tecla P
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     //aqui va todo lo que iba en el update
@@ -136,32 +149,38 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     public void paint1 (Graphics g) {
         //Dibuja la imagen de fondo
         g.drawImage(fondo, 0, 0, getSize().width, getSize().height, this);
-              
+        if (pausa){
+            g.drawString ("PAUSA", getWidth() / 2, getHeight() / 2);
+        }
+       if ((nubecita!=null) && (barquito!=null)){
+        g.drawImage (nubecita.getImagenI(), nubecita.getPosX(), nubecita.getPosY(), this );
+        g.drawImage (barquito.getImagenI(), barquito.getPosX(), barquito.getPosY(), this);
+       }      
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     
