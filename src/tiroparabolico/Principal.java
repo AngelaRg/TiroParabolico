@@ -25,7 +25,7 @@ public class Principal extends JFrame implements Runnable, KeyListener  {
     
     //Constructor (aqui se pone todo lo del init)
     public Principal () {
-        
+        this.setSize(800,600);
     }
     
     public void run() {
