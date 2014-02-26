@@ -8,14 +8,10 @@ package tiroparabolico;
 
 /**
  *
- * @author Angela Romo 1139764 y Cesar Ruben Alejandro 1036009 :)
- *  
+ * @author Aaron
  */
-public class TiroParabolico {
-
-    /**
-     * @param args the command line arguments
-     */
+public class Main {
+    
     public static void main(String[] args) {
         // TODO code application logic here
         //Crea un nuevo objeto JFrameHolaMundo
@@ -23,4 +19,5 @@ public class TiroParabolico {
         //Despliega la ventana en pantalla al hacerla visible
         juego.setVisible(true);
     }
+    
 }
