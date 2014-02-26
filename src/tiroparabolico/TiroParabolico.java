@@ -8,7 +8,8 @@ package tiroparabolico;
 
 /**
  *
- * @author Angela Romo y Cesar Ruben Alejandro :)
+ * @author Angela Romo 1139764 y Cesar Ruben Alejandro 1036009 :)
+ *  
  */
 public class TiroParabolico {
 
