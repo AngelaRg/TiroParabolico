@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package tiroparabolico;
 
 /**
  *
- * @author Aaron
- * sobre esta clase se va a hacer el codigo y las funciones run, paint etc etc
+ * @author Aaron sobre esta clase se va a hacer el codigo y las funciones run,
+ * paint etc etc
  */
-
 //Aqui importar todas las librerias
 import javax.swing.JFrame;
 import java.awt.Graphics;
@@ -26,7 +24,7 @@ import java.awt.Toolkit;
 
 public class Principal extends JFrame implements Runnable, KeyListener, MouseListener {
     // Aqui declarar todas las variables
-    
+
     //Variables de control de tiempo de la animacion
     private long tiempoActual;
     private long tiempoInicial;
@@ -39,36 +37,44 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private boolean pausa; // bandera para manejar la pausa
     private Nube nubecita; // nube del juego
     private Barco barquito; // barco del juego
-    
+    private Rayo rayito; //rayo del juego
+    private boolean click; //identificar click
+    private int clickX; //coordenada de click en X
+    private int clickY; //coordenada de click en Y
+
     //Constructor (aqui se pone todo lo del init)
-    public Principal () {
+    public Principal() {
         setTitle("JFrame HolaMundo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(200, 200);
-        this.setSize(800,600);
+        this.setSize(800, 600);
         addKeyListener(this);
+        addMouseListener(this);
         //SONIDOS
         bomb = new SoundClip("Sounds/Explosion.wav");
         miss = new SoundClip("Sounds/miss.wav");
         //FONDO
         //Carga la imagen de fondo
         fondo = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("fondo/imagenmar.jpg"));
-        
+        //Pausa y clicks
         pausa = false;
-        
-        nubecita = new Nube ( 20 , getHeight()/2);
-        
-        barquito = new Barco (getWidth()/2, getHeight()/2);
-        
+        clickX = 0;
+        clickY = 0;
+        click = false;
+        nubecita = new Nube(20, getHeight() / 2);
+        barquito = new Barco(getWidth() / 2, getHeight());
+        barquito.setPosY(getHeight() - 2 * barquito.getAlto()); //reposicionar en la parte de abajo del applet
+        rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
+
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
         th.start();
-        
+
     }
-    
+
     public void run() {
-        
+
         //Guarda el tiempo actual del sistema
         tiempoActual = System.currentTimeMillis();
 
@@ -90,8 +96,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         }
     }
+
     //funcion actualiza como cualquier otra
-    public void actualiza (){
+    public void actualiza() {
         //Determina el tiempo que ha transcurrido desde que el Applet inicio su ejecuciÃ³n
         long tiempoTranscurrido = System.currentTimeMillis() - tiempoActual;
 
@@ -99,17 +106,24 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         tiempoActual += tiempoTranscurrido;
         nubecita.actualiza(tiempoActual);
         barquito.actualiza(tiempoActual);
-        
+
+        if (click) {
+
+            //lanzar rayito
+            rayito.setPosX(getWidth() / 2);
+        }
+        click = false;
+
     }
-    
-    //funcion actualiza como cualquier otra
-    public void checaColision (){
-        
+
+//funcion actualiza como cualquier otra
+    public void checaColision() {
+
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-       // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -123,9 +137,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     public void keyReleased(KeyEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     //aqui va todo lo que iba en el update
-    public void paint (Graphics g) {
+    public void paint(Graphics g) {
         // Inicializan el DoubleBuffer
         if (dbImage == null) {
             dbImage = createImage(this.getSize().width, this.getSize().height);
@@ -142,30 +156,38 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         // Dibuja la imagen actualizada
         g.drawImage(dbImage, 0, 0, this);
-        
+
     }
-    
+
     // aqui va todo lo que iba en el paint
-    public void paint1 (Graphics g) {
+    public void paint1(Graphics g) {
         //Dibuja la imagen de fondo
         g.drawImage(fondo, 0, 0, getSize().width, getSize().height, this);
-        if (pausa){
-            g.drawString ("PAUSA", getWidth() / 2, getHeight() / 2);
+        if (pausa) {
+            g.drawString("PAUSA", getWidth() / 2, getHeight() / 2);
         }
-       if ((nubecita!=null) && (barquito!=null)){
-        g.drawImage (nubecita.getImagenI(), nubecita.getPosX(), nubecita.getPosY(), this );
-        g.drawImage (barquito.getImagenI(), barquito.getPosX(), barquito.getPosY(), this);
-       }      
+        if ((nubecita != null) && (barquito != null) && (rayito != null)) {
+            g.drawImage(rayito.getImagenI(), rayito.getPosX(), rayito.getPosY(), this);
+            g.drawImage(nubecita.getImagenI(), nubecita.getPosX(), nubecita.getPosY(), this);
+            g.drawImage(barquito.getImagenI(), barquito.getPosX(), barquito.getPosY(), this);
+
+        }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //si hay un click en la nubecita se registra y se guardan las coordenadas
+        if (nubecita.clickEnPersonaje(e.getX(), e.getY())) {
+            click = true;
+            clickX = e.getX();
+            clickY = e.getY();
+        }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
@@ -182,6 +204,5 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     public void mouseExited(MouseEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
+
 }

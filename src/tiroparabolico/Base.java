@@ -136,4 +136,16 @@ import java.awt.Rectangle;
     public void actualiza (long tiempo) {
         anima.actualiza(tiempo);
     }
+    
+    /**
+     * 
+     * @param clickX coordenadas en x del click
+     * @param clickY coordenadas en y del click
+     * @return <code> booleano </code> que indica si el click estuvo adentro del personaje o no
+     */
+    public boolean clickEnPersonaje(int clickX, int clickY) {
+
+        return getPerimetro().contains(clickX, clickY);
+
+    }
 }
