@@ -43,6 +43,11 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private int clickY; //coordenada de click en Y
     private boolean limitesBarquitoIzquierda; // bandera para delimitar que el barquito no se salga por el lado izquierdo del jFrame
     private boolean limitesBarquitoDerecha; // bandera para delimitar que no se salga por el lado derecho 
+    private int velocidadInicial;
+    private int tiempo;
+    private double angulo;
+    private int velocidadX;
+    private int velocidadY;
 
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
@@ -63,12 +68,19 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         clickX = 0;
         clickY = 0;
         click = false;
-        nubecita = new Nube(20, getHeight() / 2);
+       nubecita = new Nube(0, getHeight() / 2);
+       
         barquito = new Barco(getWidth() / 2, getHeight());
         barquito.setPosY(getHeight() - 2 * barquito.getAlto()); //reposicionar en la parte de abajo del applet
-        rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
+        //rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
+        rayito = new Rayo(0, nubecita.getPosY()+18);
         limitesBarquitoIzquierda = false;
         limitesBarquitoDerecha = false;
+
+        velocidadInicial = 10;
+        tiempo = 0;
+        angulo = 0.1;
+        velocidadX = velocidadInicial * ((int) Math.cos(angulo));
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -92,7 +104,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             repaint(); // Se actualiza el <code>Applet</code> repintando el contenido.
             try {
                 // El thread se duerme.
-                Thread.sleep(200);
+                Thread.sleep(500);
             } catch (InterruptedException ex) {
                 System.out.println("Error en " + ex.toString());
             }
@@ -114,9 +126,11 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         if (click) {
 
             //lanzar rayito
-            rayito.setPosX(getWidth() / 2);
+           rayito.setPosX(velocidadX * tiempo);
+           //rayito.setPosY( -(velocidadInicial*((int)Math.sin(angulo))*tiempo - 4*tiempo*tiempo ) + nubecita.getPosY() );
+
         }
-        click = false;
+        //click = false;
 
         switch (barquito.getDireccion()) {
             case 1: // se mueve a la izquierda
@@ -138,7 +152,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         barquito.setDireccion(-1); // detiene al barquito
         limitesBarquitoIzquierda = false; // reiniciamos para que se pueda mover hacia el lado contrario
-        limitesBarquitoDerecha = false; 
+        limitesBarquitoDerecha = false;
+        tiempo++;
     }
 
 //funcion actualiza como cualquier otra
