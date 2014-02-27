@@ -17,6 +17,7 @@ import java.net.URL;
 
 public class Barco extends Base {
     private static final String P = "PAUSADO";
+    private int direccion;
     
     public Barco(int posX, int posY) {
         super(posX, posY);
@@ -35,6 +36,8 @@ public class Barco extends Base {
         anima.sumaCuadro(train0, 200);
         anima.sumaCuadro(train1, 200);
         anima.sumaCuadro(train2, 200);
+        
+        direccion = -1;
 
     }
 
@@ -46,6 +49,14 @@ public class Barco extends Base {
      */
     public static String getPausa() {
         return P;
+    }
+    
+    public void setDireccion (int x){
+        direccion = x;
+    }
+    
+    public int getDireccion (){
+        return direccion;
     }
     
 }

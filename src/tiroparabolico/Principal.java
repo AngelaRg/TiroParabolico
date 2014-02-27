@@ -41,6 +41,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private boolean click; //identificar click
     private int clickX; //coordenada de click en X
     private int clickY; //coordenada de click en Y
+    private boolean limitesBarquitoIzquierda; // bandera para delimitar que el barquito no se salga por el lado izquierdo del jFrame
+    private boolean limitesBarquitoDerecha; // bandera para delimitar que no se salga por el lado derecho 
 
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
@@ -65,7 +67,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         barquito = new Barco(getWidth() / 2, getHeight());
         barquito.setPosY(getHeight() - 2 * barquito.getAlto()); //reposicionar en la parte de abajo del applet
         rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
-
+        limitesBarquitoIzquierda = false;
+        limitesBarquitoDerecha = false;
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -106,6 +109,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         tiempoActual += tiempoTranscurrido;
         nubecita.actualiza(tiempoActual);
         barquito.actualiza(tiempoActual);
+        rayito.actualiza(tiempoActual);
 
         if (click) {
 
@@ -114,11 +118,37 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         }
         click = false;
 
+        switch (barquito.getDireccion()) {
+            case 1: // se mueve a la izquierda
+                if (!limitesBarquitoIzquierda) {
+                    barquito.setPosX(barquito.getPosX() - 10);
+                } else {
+                    barquito.setPosX(barquito.getPosX() + 10); // si esta chocando movemos 10 unidades a la derecha al barquito
+                }
+
+                break;
+            case 2: // se mueve a la derecha
+                if (!limitesBarquitoDerecha) {
+                    barquito.setPosX(barquito.getPosX() + 10);
+                } else {
+                    barquito.setPosX(barquito.getPosX() - 10); // si esta chocando, movemos 10 unidades a la izquierda al barquito
+                }
+                break;
+        }
+
+        barquito.setDireccion(-1); // detiene al barquito
+        limitesBarquitoIzquierda = false; // reiniciamos para que se pueda mover hacia el lado contrario
+        limitesBarquitoDerecha = false; 
     }
 
 //funcion actualiza como cualquier otra
     public void checaColision() {
-
+        if (barquito.getPosX() < 0) {
+            limitesBarquitoIzquierda = true;
+        }
+        if (barquito.getPosX() + barquito.getAncho() > getWidth()) {
+            limitesBarquitoDerecha = true;
+        }
     }
 
     @Override
@@ -131,11 +161,21 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         if (e.getKeyCode() == KeyEvent.VK_P) {    //Presiono flecha arriba
             pausa = !pausa;
         } // cambia la bandera de pausa si se presiona la tecla P
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            //Presiono flecha izquierda
+            barquito.setDireccion(1);
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            //Presiono flecha derecha
+            barquito.setDireccion(2);
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     //aqui va todo lo que iba en el update
@@ -182,6 +222,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             clickX = e.getX();
             clickY = e.getY();
         }
+
     }
 
     @Override
