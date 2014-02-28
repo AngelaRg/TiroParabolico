@@ -83,25 +83,18 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         barquito = new Barco(getWidth() / 2, getHeight());
         barquito.setPosY(getHeight() - 2 * barquito.getAlto() + 55); //reposicionar en la parte de abajo del applet
-        //rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
         rayito = new Rayo(0, nubecita.getPosY() + 18);
         limitesBarquitoIzquierda = false;
         limitesBarquitoDerecha = false;
 
-        //velocidadInicial = 60; // la v0 tmb debe cambiar por cada tiro
-        //angulo = 1; // angulo debe cambiar por cada tiro
-        //  do {
-        velocidadInicial = Math.random() * (70 - 50)+50;
-        
-        //valor entre 10 y 100
-        angulo = Math.random() * (1.1 - 0.9)+0.9; //entre 0 y 1.5 radianes
-       
+        //velocidadInicial = Math.random() * (70 - 50)+50;
+        rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
+
+        angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
         tiempo = 0;
-        velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
-        //inicializar h(altura maxima del tiro), R (alcance maximo del tiro)
-       // h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8));
-        //R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
-        // } while (h < getHeight() || R < getWidth()); // Declaras un hilo
+        //velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
+        rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
+
         Thread th = new Thread(this);
         // Empieza el hilo
         th.start();
@@ -140,21 +133,19 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         //Guarda el tiempo actual
         tiempoActual += tiempoTranscurrido;
         nubecita.actualiza(tiempoActual);
-        //barquito.actualiza(tiempoActual);
-        //rayito.actualiza(tiempoActual);
 
         if (click) {
             rayito.actualiza(tiempoActual);
             //lanzar rayito
-            rayito.setPosX(velocidadX * tiempo); // formulazo
-            rayito.setPosY(-(velocidadInicial * (Math.sin(angulo)) * tiempo - 4 * tiempo * tiempo) + nubecita.getPosY()); // se le suma la posY de nube porque es la pos inicial
+            rayito.setPosX(rayito.getVelocidadX() * tiempo); // formulazo
+            rayito.setPosY(-(rayito.getVelocidadInicial() * (Math.sin(angulo)) * tiempo - 4 * tiempo * tiempo) + nubecita.getPosY()); // se le suma la posY de nube porque es la pos inicial
             // Formulas fisicas
             tiempo++;
         }
 
         switch (barquito.getDireccion()) {
             case 1: // se mueve a la izquierda
-                 barquito.actualiza(tiempoActual);
+                barquito.actualiza(tiempoActual);
                 if (!limitesBarquitoIzquierda) {
                     barquito.setPosX(barquito.getPosX() - 15);
                 } else {
@@ -163,14 +154,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
                 break;
             case 2: // se mueve a la derecha
-                 barquito.actualiza(tiempoActual);
+                barquito.actualiza(tiempoActual);
                 if (!limitesBarquitoDerecha) {
                     barquito.setPosX(barquito.getPosX() + 15);
                 } else {
                     barquito.setPosX(barquito.getPosX() - 15); // si esta chocando, movemos 10 unidades a la izquierda al barquito
                 }
                 break;
-                
+
         }
 
         barquito.setDireccion(-1); // detiene al barquito
@@ -196,15 +187,13 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosX(0);
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
-           
-                velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
-                angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
-                
-                velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
-           
-            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
+
+            angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
+            rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
+            rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
+
         }
-        if (rayito.getPosY() > getHeight()) { 
+        if (rayito.getPosY() > getHeight()) {
             sad.play(); //tocar sonido
             click = false; //resetear click
             contPerdidas++; //se agrega una perdida mas           
@@ -212,14 +201,12 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosX(0);
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
-       
-                velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
-                angulo = Math.random() * (1.1- 0.9) + 0.9; //entre 0 y 1.5 radianes
-                
-                velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
-            
-            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
 
+            rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
+            rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
+            angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
+
+            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
         }
         if (contPerdidas >= 3) {
             vidas--;

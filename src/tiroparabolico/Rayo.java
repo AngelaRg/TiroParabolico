@@ -16,7 +16,11 @@ import java.awt.Toolkit;
 import java.net.URL;
 
 public class Rayo extends Base {
+    private double velocidadInicial;
+    private double velocidadX;
+    
     public Rayo (double posX, double posY){
+        
         super (posX, posY);
         
         URL bURL = this.getClass().getResource("imagesR/frame_000.gif");
@@ -28,6 +32,24 @@ public class Rayo extends Base {
         anima = new Animacion();
         anima.sumaCuadro(train0, 200);
         anima.sumaCuadro(train1, 200);
+        velocidadInicial = 0;
+        velocidadX = 0;
+    }
+    
+    public void setVelocidadInicial (double x){
+        velocidadInicial = x;
+    }
+    
+    public double getVelocidadInicial (){
+        return velocidadInicial;
+    }
+    
+    public void setVelocidadX (double x){
+        velocidadX = x;
+    }
+    
+    public double getVelocidadX(){
+        return velocidadX;
     }
     
 }
