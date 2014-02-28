@@ -28,8 +28,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     //Variables de control de tiempo de la animacion
     private long tiempoActual;
     private long tiempoInicial;
-    private SoundClip bomb;    //Objeto AudioClip 
-    private SoundClip miss;    //Objeto AudioClip 
+    private SoundClip happy;    //Objeto AudioClip 
+    private SoundClip sad;    //Objeto AudioClip 
     private Image dbImage;	// Imagen a proyectar	
     private Graphics dbg;	// Objeto grafico
     private Color c; //para color de strings
@@ -48,6 +48,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private double angulo;
     private double velocidadX;
     private double velocidadY;
+    private int score;
+    private int contPerdidas;
+    private double h, R; //altura maxima h y alcance maximo R (Formulas físicas de tiro parabolico) 
 
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
@@ -58,8 +61,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         addKeyListener(this);
         addMouseListener(this);
         //SONIDOS
-        bomb = new SoundClip("Sounds/Explosion.wav");
-        miss = new SoundClip("Sounds/miss.wav");
+        happy = new SoundClip("Sounds/diamond.wav");
+        sad = new SoundClip("Sounds/Explosion.wav");
         //FONDO
         //Carga la imagen de fondo
         fondo = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("fondo/imagenmar.jpg"));
@@ -68,19 +71,27 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         clickX = 0;
         clickY = 0;
         click = false;
-       nubecita = new Nube(0, getHeight() / 2);
-       
+        //inicializa score, contador, h(altura maxima del tiro), R (alcance maximo del tiro)
+        score = 0;
+        contPerdidas = 0;
+        h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8));
+        R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
+        //crea personajes
+        nubecita = new Nube(0, getHeight() / 2);
+
         barquito = new Barco(getWidth() / 2, getHeight());
         barquito.setPosY(getHeight() - 2 * barquito.getAlto()); //reposicionar en la parte de abajo del applet
         //rayito = new Rayo(20 + (nubecita.getAncho() / 2), getHeight() / 2);
-        rayito = new Rayo(0, nubecita.getPosY()+18);
+        rayito = new Rayo(0, nubecita.getPosY() + 18);
         limitesBarquitoIzquierda = false;
         limitesBarquitoDerecha = false;
 
-        velocidadInicial = 60; // la v0 tmb debe cambiar por cada tiro
+        //velocidadInicial = 60; // la v0 tmb debe cambiar por cada tiro
+        //angulo = 1; // angulo debe cambiar por cada tiro
+        velocidadInicial = Math.random() * (100 - 10);//valor entre 10 y 100
+        angulo = Math.random() * (1.5 - 0); //entre 0 y 1.5 radianes
         tiempo = 0;
-        angulo = 1; // angulo debe cambiar por cada tiro
-        velocidadX = velocidadInicial * ( Math.cos(angulo)); // formula fisica
+        velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -104,7 +115,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             repaint(); // Se actualiza el <code>Applet</code> repintando el contenido.
             try {
                 // El thread se duerme.
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ex) {
                 System.out.println("Error en " + ex.toString());
             }
@@ -126,26 +137,26 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         if (click) {
 
             //lanzar rayito
-           rayito.setPosX(velocidadX * tiempo); // formulazo
-           rayito.setPosY( -(velocidadInicial*(Math.sin(angulo))*tiempo - 4*tiempo*tiempo ) + nubecita.getPosY() ); // se le suma la posY de nube porque es la pos inicial
-           // Formulas fisicas
+            rayito.setPosX(velocidadX * tiempo); // formulazo
+            rayito.setPosY(-(velocidadInicial * (Math.sin(angulo)) * tiempo - 4 * tiempo * tiempo) + nubecita.getPosY()); // se le suma la posY de nube porque es la pos inicial
+            // Formulas fisicas
         }
         
 
         switch (barquito.getDireccion()) {
             case 1: // se mueve a la izquierda
                 if (!limitesBarquitoIzquierda) {
-                    barquito.setPosX(barquito.getPosX() - 10);
+                    barquito.setPosX(barquito.getPosX() - 15);
                 } else {
-                    barquito.setPosX(barquito.getPosX() + 10); // si esta chocando movemos 10 unidades a la derecha al barquito
+                    barquito.setPosX(barquito.getPosX() + 15); // si esta chocando movemos 10 unidades a la derecha al barquito
                 }
 
                 break;
             case 2: // se mueve a la derecha
                 if (!limitesBarquitoDerecha) {
-                    barquito.setPosX(barquito.getPosX() + 10);
+                    barquito.setPosX(barquito.getPosX() + 15);
                 } else {
-                    barquito.setPosX(barquito.getPosX() - 10); // si esta chocando, movemos 10 unidades a la izquierda al barquito
+                    barquito.setPosX(barquito.getPosX() - 15); // si esta chocando, movemos 10 unidades a la izquierda al barquito
                 }
                 break;
         }
@@ -163,6 +174,38 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         }
         if (barquito.getPosX() + barquito.getAncho() > getWidth()) {
             limitesBarquitoDerecha = true;
+        }
+        if (rayito.intersecta(barquito)) {
+            happy.play(); //tocar sonido
+            click=false; //resetear click
+            score += 2; //aumenta 2 por cada rayo atrapado
+            //reiniciar valores del rayo para siguiente jugada
+            rayito.setPosX(0);
+            rayito.setPosY(nubecita.getPosY() + 18);
+            tiempo = 0;
+          //  do {
+                 velocidadInicial = Math.random() * (100 - 10);//valor entre 10 y 100
+                 angulo = Math.random() * (1.5 - 0); //entre 0 y 1.5 radianes
+         //   } while (h > rayito.getPosY() || R < getWidth()); 
+            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
+        }
+        if (rayito.getPosY() > getHeight() && click) { // ESO DE CLICK NO SE SI VA
+            sad.play(); //tocar sonido
+            click=false; //resetear click
+            contPerdidas++; //se agrega una perdida mas           
+            //reiniciar valores del rayo para siguiente jugada
+            rayito.setPosX(0);
+            rayito.setPosY(nubecita.getPosY() + 18);
+            tiempo = 0;
+          //  do {
+                 velocidadInicial = Math.random() * (100 - 10);//valor entre 10 y 100
+                 angulo = Math.random() * (1.5 - 0); //entre 0 y 1.5 radianes
+          //  } while (h > rayito.getPosY() || R < getWidth()); 
+            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
+            
+        }
+        if (contPerdidas >= 3) {
+            //quitar una vidaaaa!
         }
     }
 
