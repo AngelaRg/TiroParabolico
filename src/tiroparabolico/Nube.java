@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class Nube extends Base {
 
-    public Nube(int posX, int posY) {
+    public Nube(double posX, double posY) {
         super(posX, posY);
 
         URL bURL = this.getClass().getResource("imagesN/frame_000.gif");

@@ -16,7 +16,7 @@ import java.awt.Toolkit;
 import java.net.URL;
 
 public class Rayo extends Base {
-    public Rayo (int posX, int posY){
+    public Rayo (double posX, double posY){
         super (posX, posY);
         
         URL bURL = this.getClass().getResource("imagesR/frame_000.gif");

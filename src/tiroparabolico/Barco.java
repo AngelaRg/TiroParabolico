@@ -19,7 +19,7 @@ public class Barco extends Base {
     private static final String P = "PAUSADO";
     private int direccion;
     
-    public Barco(int posX, int posY) {
+    public Barco(double posX, double posY) {
         super(posX, posY);
         
         URL bURL = this.getClass().getResource("imagesB/frame_000.gif");

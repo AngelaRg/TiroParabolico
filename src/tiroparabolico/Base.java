@@ -16,8 +16,8 @@ import java.awt.Image;
 import java.awt.Rectangle;
 
     public class Base {
-    private int posX;    //posicion en x.       
-    private int posY;	//posicion en y.
+    private double posX;    //posicion en x.       
+    private double posY;	//posicion en y.
     protected Animacion anima; // animacion del objeto
 
     /**
@@ -26,7 +26,7 @@ import java.awt.Rectangle;
      * @param posX es la <code>posicion en x</code> del objeto.
      * @param posY es la <code>posicion en y</code> del objeto.
      */
-    public Base(int posX, int posY /*Image image*/) {
+    public Base(double posX, double posY /*Image image*/) {
         this.posX = posX;
         this.posY = posY;
         //icono = new ImageIcon(image);
@@ -37,7 +37,7 @@ import java.awt.Rectangle;
      *
      * @param posX es la <code>posicion en x</code> del objeto.
      */
-    public void setPosX(int posX) {
+    public void setPosX(double posX) {
         this.posX = posX;
     }
 
@@ -46,7 +46,7 @@ import java.awt.Rectangle;
      *
      * @return posX es la <code>posicion en x</code> del objeto.
      */
-    public int getPosX() {
+    public double getPosX() {
         return posX;
     }
 
@@ -55,7 +55,7 @@ import java.awt.Rectangle;
      *
      * @param posY es la <code>posicion en y</code> del objeto.
      */
-    public void setPosY(int posY) {
+    public void setPosY(double posY) {
         this.posY = posY;
     }
 
@@ -64,7 +64,7 @@ import java.awt.Rectangle;
      *
      * @return posY es la <code>posicion en y</code> del objeto.
      */
-    public int getPosY() {
+    public double getPosY() {
         return posY;
     }
 
@@ -110,7 +110,7 @@ import java.awt.Rectangle;
      * del rectangulo
      */
     public Rectangle getPerimetro() {
-        return new Rectangle(getPosX(), getPosY(), getAncho(), getAlto());
+        return new Rectangle((int) getPosX(), (int) getPosY(), getAncho(), getAlto());
     }
     
 

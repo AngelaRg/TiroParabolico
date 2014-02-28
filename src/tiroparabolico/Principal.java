@@ -43,11 +43,11 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private int clickY; //coordenada de click en Y
     private boolean limitesBarquitoIzquierda; // bandera para delimitar que el barquito no se salga por el lado izquierdo del jFrame
     private boolean limitesBarquitoDerecha; // bandera para delimitar que no se salga por el lado derecho 
-    private int velocidadInicial;
-    private int tiempo;
+    private double velocidadInicial;
+    private double tiempo;
     private double angulo;
-    private int velocidadX;
-    private int velocidadY;
+    private double velocidadX;
+    private double velocidadY;
 
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
@@ -77,10 +77,10 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         limitesBarquitoIzquierda = false;
         limitesBarquitoDerecha = false;
 
-        velocidadInicial = 10;
+        velocidadInicial = 60; // la v0 tmb debe cambiar por cada tiro
         tiempo = 0;
-        angulo = 0.1;
-        velocidadX = velocidadInicial * ((int) Math.cos(angulo));
+        angulo = 1; // angulo debe cambiar por cada tiro
+        velocidadX = velocidadInicial * ( Math.cos(angulo)); // formula fisica
         // Declaras un hilo
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -126,11 +126,11 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         if (click) {
 
             //lanzar rayito
-           rayito.setPosX(velocidadX * tiempo);
-           //rayito.setPosY( -(velocidadInicial*((int)Math.sin(angulo))*tiempo - 4*tiempo*tiempo ) + nubecita.getPosY() );
-
+           rayito.setPosX(velocidadX * tiempo); // formulazo
+           rayito.setPosY( -(velocidadInicial*(Math.sin(angulo))*tiempo - 4*tiempo*tiempo ) + nubecita.getPosY() ); // se le suma la posY de nube porque es la pos inicial
+           // Formulas fisicas
         }
-        //click = false;
+        
 
         switch (barquito.getDireccion()) {
             case 1: // se mueve a la izquierda
@@ -222,9 +222,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             g.drawString("PAUSA", getWidth() / 2, getHeight() / 2);
         }
         if ((nubecita != null) && (barquito != null) && (rayito != null)) {
-            g.drawImage(rayito.getImagenI(), rayito.getPosX(), rayito.getPosY(), this);
-            g.drawImage(nubecita.getImagenI(), nubecita.getPosX(), nubecita.getPosY(), this);
-            g.drawImage(barquito.getImagenI(), barquito.getPosX(), barquito.getPosY(), this);
+            g.drawImage(rayito.getImagenI(), (int) rayito.getPosX(), (int) rayito.getPosY(), this);
+            g.drawImage(nubecita.getImagenI(), (int) nubecita.getPosX(), (int) nubecita.getPosY(), this);
+            g.drawImage(barquito.getImagenI(), (int) barquito.getPosX(), (int) barquito.getPosY(), this);
 
         }
     }
