@@ -196,16 +196,15 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosX(0);
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
-            //do {
+           
                 velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
                 angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
-                h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8)) + nubecita.getPosY()+18;
-                R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
+                
                 velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
-            //} while (h > 500 ||R > getWidth() || R<getWidth()/2);
+           
             // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
         }
-        if (rayito.getPosY() > getHeight()) { // ESO DE CLICK NO SE SI VA
+        if (rayito.getPosY() > getHeight()) { 
             sad.play(); //tocar sonido
             click = false; //resetear click
             contPerdidas++; //se agrega una perdida mas           
@@ -213,13 +212,12 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosX(0);
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
-            //do {
+       
                 velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
                 angulo = Math.random() * (1.1- 0.9) + 0.9; //entre 0 y 1.5 radianes
-                h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8))+nubecita.getPosY()+18;
-                R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
+                
                 velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
-            //} while (h > 500 ||R > getWidth()|| R<getWidth()/2);
+            
             // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
 
         }
