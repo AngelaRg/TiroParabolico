@@ -91,10 +91,10 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         //velocidadInicial = 60; // la v0 tmb debe cambiar por cada tiro
         //angulo = 1; // angulo debe cambiar por cada tiro
         //  do {
-        velocidadInicial = Math.random() * (70 - 50);
+        velocidadInicial = Math.random() * (70 - 50)+50;
         
         //valor entre 10 y 100
-        angulo = Math.random() * (1.1 - 0.9); //entre 0 y 1.5 radianes
+        angulo = Math.random() * (1.1 - 0.9)+0.9; //entre 0 y 1.5 radianes
        
         tiempo = 0;
         velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
@@ -197,8 +197,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
             //do {
-                velocidadInicial = Math.random() * (70 - 50);//valor entre 10 y 100
-                angulo = Math.random() * (1.1 - 0.9); //entre 0 y 1.5 radianes
+                velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
+                angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
                 h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8)) + nubecita.getPosY()+18;
                 R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
                 velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
@@ -214,8 +214,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setPosY(nubecita.getPosY() + 18);
             tiempo = 0;
             //do {
-                velocidadInicial = Math.random() * (70 - 50);//valor entre 10 y 100
-                angulo = Math.random() * (1.1- 0.9); //entre 0 y 1.5 radianes
+                velocidadInicial = Math.random() * (70 - 50) + 50;//valor entre 10 y 100
+                angulo = Math.random() * (1.1- 0.9) + 0.9; //entre 0 y 1.5 radianes
                 h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8))+nubecita.getPosY()+18;
                 R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
                 velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
