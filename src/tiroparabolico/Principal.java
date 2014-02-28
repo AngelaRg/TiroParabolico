@@ -35,6 +35,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private Color c; //para color de strings
     private Image fondo;	//Imagen de fondo del JFrame
     private boolean pausa; // bandera para manejar la pausa
+    private boolean instrucciones; //bandera para manejar despliegue de instrucciones
     private Nube nubecita; // nube del juego
     private Barco barquito; // barco del juego
     private Rayo rayito; //rayo del juego
@@ -49,6 +50,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private double velocidadX;
     private double velocidadY;
     private int score;
+    private int vidas;
     private int contPerdidas;
     private double h, R; //altura maxima h y alcance maximo R (Formulas físicas de tiro parabolico) 
 
@@ -68,13 +70,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         fondo = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("fondo/imagenmar.jpg"));
         //Pausa y clicks
         pausa = false;
+        instrucciones = false;
         clickX = 0;
         clickY = 0;
         click = false;
-        //inicializa score, contador, h(altura maxima del tiro), R (alcance maximo del tiro)
+        //inicializa score, contador, vidas
         score = 0;
         contPerdidas = 0;
-
+        vidas = 5;
         //crea personajes
         nubecita = new Nube(0, getHeight() / 2);
 
@@ -93,6 +96,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         angulo = Math.random() * (1.5 - 0); //entre 0 y 1.5 radianes
         tiempo = 0;
         velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
+        //inicializar h(altura maxima del tiro), R (alcance maximo del tiro)
         h = (velocidadInicial * velocidadInicial * Math.sin(angulo) * Math.sin(angulo)) / (2 * (9.8));
         R = (velocidadInicial * velocidadInicial * Math.sin(2 * angulo)) / (9.8);
         // } while (h < getHeight() || R < getWidth()); // Declaras un hilo
@@ -108,7 +112,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         tiempoActual = System.currentTimeMillis();
 
         //Ciclo principal del Applet. Actualiza y despliega en pantalla la animaciÃ³n hasta que el Applet sea cerrado
-        while (true) {
+        while (vidas > 0) {
 
             //si esta pausado no actualizas ni checas colision 
             if (!pausa) {
@@ -215,35 +219,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         }
         if (contPerdidas >= 3) {
-            //quitar una vidaaaa!
+            vidas--;
+            contPerdidas = 0;
         }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_P) {    //Presiono flecha arriba
-            pausa = !pausa;
-        } // cambia la bandera de pausa si se presiona la tecla P
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            //Presiono flecha izquierda
-            barquito.setDireccion(1);
-        }
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            //Presiono flecha derecha
-            barquito.setDireccion(2);
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
     }
 
     //aqui va todo lo que iba en el update
@@ -269,17 +247,61 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
     // aqui va todo lo que iba en el paint
     public void paint1(Graphics g) {
-        //Dibuja la imagen de fondo
-        g.drawImage(fondo, 0, 0, getSize().width, getSize().height, this);
-        if (pausa) {
-            g.drawString("PAUSA", getWidth() / 2, getHeight() / 2);
-        }
-        if ((nubecita != null) && (barquito != null) && (rayito != null)) {
-            g.drawImage(rayito.getImagenI(), (int) rayito.getPosX(), (int) rayito.getPosY(), this);
-            g.drawImage(nubecita.getImagenI(), (int) nubecita.getPosX(), (int) nubecita.getPosY(), this);
-            g.drawImage(barquito.getImagenI(), (int) barquito.getPosX(), (int) barquito.getPosY(), this);
+        if (vidas <= 0) {
+            g.drawString("GAME OVER", getWidth() / 2 - 50, getHeight() / 2 - 10);
+        } else if (instrucciones) {
+            g.drawString("INSTRUCCIONES", getWidth() / 2 - 60, 100);
+        } else {
+            //Dibuja la imagen de fondo
+            g.drawImage(fondo, 0, 0, getSize().width, getSize().height, this);
+            g.drawString("Vidas: " + vidas, getWidth() - 200, 50);
+            if (pausa) {
+                g.drawString("PAUSA", getWidth() / 2 - 10, 200);
+            }
+            if ((nubecita != null) && (barquito != null) && (rayito != null)) {
+                g.drawImage(rayito.getImagenI(), (int) rayito.getPosX(), (int) rayito.getPosY(), this);
+                g.drawImage(nubecita.getImagenI(), (int) nubecita.getPosX(), (int) nubecita.getPosY(), this);
+                g.drawImage(barquito.getImagenI(), (int) barquito.getPosX(), (int) barquito.getPosY(), this);
 
+            }
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_P) {    //Presiono letra P
+            pausa = !pausa; //cambio valor de pausa
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            //Presiono flecha izquierda
+            barquito.setDireccion(1);
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            //Presiono flecha derecha
+            barquito.setDireccion(2);
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_I) {
+            //Presiono tecla I
+            instrucciones = !instrucciones; //quito o pongo instrucciones
+            if (instrucciones) {  // pauso cuando hay instrucciones para evitar que el juego continue mientras aparecen estas
+                pausa = true;
+                //  } else {
+                //      pausa = false;
+            }
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     @Override
