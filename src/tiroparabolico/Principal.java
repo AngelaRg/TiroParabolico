@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Vector;
 
 public class Principal extends JFrame implements Runnable, KeyListener, MouseListener {
     // Aqui declarar todas las variables
@@ -75,6 +76,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private boolean guarda; // bandera para identificar cuando guardar los datos del juego
     private boolean carga; // bandera para identificar cuando cargar los datos guardados al juego
     
+    private Vector vec;    // Objeto vector para agregar el puntaje.
+    private String[] arr;    //Arreglo del archivo divido.
+        
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
         setTitle("JFrame HolaMundo");
@@ -132,6 +136,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         nombreArchivo = "Datos.txt";
         guarda = false;
         carga = false;
+        
+        vec = new Vector();
 
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -283,12 +289,41 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         }
         
         if (carga){
+           // BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
+            // trata de ¿gurdar? los datos sin hacer casts usando los mismos nombres de variables que use en el guardar
             BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
-            // trata de gurdar los datos sin hacer casts usando los mismos nombres de variables que use en el guardar
-            
+                
+            //leer variables del barquito del archivo
+            double posx = Double.parseDouble(fileIn.readLine());
+            double posy = Double.parseDouble(fileIn.readLine());
+            int dir = Integer.parseInt(fileIn.readLine());
+            //leer variables del rayito del archivo
+            double ang = Double.parseDouble(fileIn.readLine());
+            double rx = Double.parseDouble(fileIn.readLine());
+            double ry = Double.parseDouble(fileIn.readLine());
+            double temp = Double.parseDouble(fileIn.readLine());
+            double vel0 = Double.parseDouble(fileIn.readLine());
+            double velx = Double.parseDouble(fileIn.readLine());
+            //leer otras variables importantes del archivo
+            boolean choqueBar = Boolean.parseBoolean(fileIn.readLine());
+            boolean limAbajo = Boolean.parseBoolean(fileIn.readLine());
+            boolean dispara = Boolean.parseBoolean(fileIn.readLine());
+             
             fileIn.close();
-
             
+            //Asignar los datos leídos a los valores del juego
+            barquito.setPosX(posx);
+            barquito.setPosY(posy);
+            barquito.setDireccion(dir);
+            angulo = ang;
+            rayito.setPosX(rx);
+            rayito.setPosY(ry);
+            tiempo = temp;
+            rayito.setVelocidadInicial(vel0);
+            rayito.setVelocidadX(velx);
+            golpeBarco = choqueBar;
+            golpeAbajo = limAbajo;
+            click = dispara;
         }
 
         barquito.setDireccion(-1); // detiene al barquito
