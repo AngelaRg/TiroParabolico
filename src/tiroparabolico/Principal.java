@@ -21,6 +21,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Principal extends JFrame implements Runnable, KeyListener, MouseListener {
     // Aqui declarar todas las variables
@@ -60,7 +67,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private Image heart3; // corazones
     private Image heart4; // corazones
     private Image heart5; // corazones
-
+    private int auxDificil; // esta variable ayuda a bajar el movimiento del barquito
+    private boolean golpeAbajo; // bandera para indicar cuando cae el rayito en el fondo inferior
+    private boolean golpeBarco; // bandera para indicar cuando el barquito atrapa al rayito
+    
+    private String nombreArchivo;    //Nombre del archivo.
+    private boolean guarda; // bandera para identificar cuando guardar los datos del juego
+    private boolean carga; // bandera para identificar cuando cargar los datos guardados al juego
+    
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
         setTitle("JFrame HolaMundo");
@@ -110,6 +124,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         tiempo = 0;
         //velocidadX = velocidadInicial * (Math.cos(angulo)); // formula fisica
         rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
+        auxDificil = 0;
+
+        golpeAbajo = false;
+        golpeBarco = false;
+        
+        nombreArchivo = "Datos.txt";
+        guarda = false;
+        carga = false;
 
         Thread th = new Thread(this);
         // Empieza el hilo
@@ -127,7 +149,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
             //si esta pausado no actualizas ni checas colision 
             if (!pausa) {
-                actualiza();
+                try{
+                   actualiza(); 
+                } catch(IOException e) {
+
+                     // System.out.println("Error en " + ex.toString());
+                }
+                //actualiza();
+                
                 checaColision();
             }
             repaint(); // Se actualiza el <code>Applet</code> repintando el contenido.
@@ -142,7 +171,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     }
 
     //funcion actualiza como cualquier otra
-    public void actualiza() {
+    public void actualiza ()throws IOException {
         //Determina el tiempo que ha transcurrido desde que el Applet inicio su ejecuciÃ³n
         long tiempoTranscurrido = System.currentTimeMillis() - tiempoActual;
 
@@ -163,7 +192,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             case 1: // se mueve a la izquierda
                 barquito.actualiza(tiempoActual);
                 if (!limitesBarquitoIzquierda) {
-                    barquito.setPosX(barquito.getPosX() - 30);
+                    barquito.setPosX(barquito.getPosX() - 30 + auxDificil);
                 } else {
                     barquito.setPosX(barquito.getPosX() + 15); // si esta chocando movemos 15 unidades a la derecha al barquito
                 }
@@ -172,7 +201,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             case 2: // se mueve a la derecha
                 barquito.actualiza(tiempoActual);
                 if (!limitesBarquitoDerecha) {
-                    barquito.setPosX(barquito.getPosX() + 30);
+                    barquito.setPosX(barquito.getPosX() + 30 - auxDificil);
                 } else {
                     barquito.setPosX(barquito.getPosX() - 15); // si esta chocando, movemos 15 unidades a la izquierda al barquito
                 }
@@ -180,38 +209,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         }
 
-        barquito.setDireccion(-1); // detiene al barquito
-        limitesBarquitoIzquierda = false; // reiniciamos para que se pueda mover hacia el lado contrario
-        limitesBarquitoDerecha = false;
-        // tiempo++;
-    }
-
-//funcion actualiza como cualquier otra
-    public void checaColision() {
-        if (barquito.getPosX() < getWidth() / 2) {
-            limitesBarquitoIzquierda = true;
-        }
-        if (barquito.getPosX() + barquito.getAncho() > getWidth()) {
-            limitesBarquitoDerecha = true;
-        }
-
-        if (rayito.intersecta(barquito)) {
-            if (sonidoActivado) {
-                happy.play(); //tocar sonido
-            }
-            click = false; //resetear click
-            score += 2; //aumenta 2 por cada rayo atrapado
-            //reiniciar valores del rayo para siguiente jugada
-            rayito.setPosX(0);
-            rayito.setPosY(nubecita.getPosY() + 18);
-            tiempo = 0;
-
-            angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
-            rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
-            rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
-
-        }
-        if (rayito.getPosY() > getHeight()) {
+        if (golpeAbajo) {
             if (sonidoActivado) {
                 sad.play(); //tocar sonido
             }
@@ -225,12 +223,103 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
             rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
             angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
+        }
 
-            // while checa que la velocidad y el angulo no ocasionen que el rayo salga del applet (h altura max, R alcance max)
+        if (golpeBarco) {
+            if (sonidoActivado) {
+                happy.play(); //tocar sonido
+            }
+            click = false; //resetear click
+            score += 2; //aumenta 2 por cada rayo atrapado
+            //reiniciar valores del rayo para siguiente jugada
+            rayito.setPosX(0);
+            rayito.setPosY(nubecita.getPosY() + 18);
+            tiempo = 0;
+
+            angulo = Math.random() * (1.1 - 0.9) + 0.9; //entre 0 y 1.5 radianes
+            rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
+            rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
+        }
+        
+        if (guarda){
+            //variables del barquito
+            double posx = barquito.getPosX();
+            double posy = barquito.getPosY();
+            int dir = barquito.getDireccion();
+            
+            //variables del rayito
+            double ang = angulo;
+            double rx = rayito.getPosX();
+            double ry = rayito.getPosY();
+            double temp = tiempo;
+            double vel0 = rayito.getVelocidadInicial();
+            double velx = rayito.getVelocidadX();
+            
+            //otras variables importantes
+            boolean choqueBar = golpeBarco;
+            boolean limAbajo = golpeAbajo;
+            boolean dispara = click;
+            
+            //guardar los datos en el archivo de texto
+            PrintWriter fileOut = new PrintWriter(new FileWriter(nombreArchivo));
+            
+            fileOut.println(posx);
+            fileOut.println(posy);
+            fileOut.println(dir);
+            
+            fileOut.println(ang);
+            fileOut.println(rx);
+            fileOut.println(ry);
+            fileOut.println(temp);
+            fileOut.println(vel0);
+            fileOut.println(velx);
+            
+            fileOut.println(choqueBar);
+            fileOut.println(limAbajo);
+            fileOut.println(dispara);
+            
+            fileOut.close();
+            
+        }
+        
+        if (carga){
+            BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
+            // trata de gurdar los datos sin hacer casts usando los mismos nombres de variables que use en el guardar
+            
+            fileIn.close();
+
+            
+        }
+
+        barquito.setDireccion(-1); // detiene al barquito
+        limitesBarquitoIzquierda = false; // reiniciamos para que se pueda mover hacia el lado contrario
+        limitesBarquitoDerecha = false;
+        golpeAbajo = false;
+        golpeBarco = false;
+        guarda = false;
+        carga = false;
+        // tiempo++;
+    }
+
+//funcion actualiza como cualquier otra
+    public void checaColision() {
+        if (barquito.getPosX() < getWidth() / 2) {
+            limitesBarquitoIzquierda = true;
+        }
+        if (barquito.getPosX() + barquito.getAncho() > getWidth()) {
+            limitesBarquitoDerecha = true;
+        }
+
+        if (rayito.intersecta(barquito)) {
+            golpeBarco = true;
+        }
+        if (rayito.getPosY() > getHeight()) {
+            golpeAbajo = true;
         }
         if (contPerdidas >= 3) {
             vidas--;
             contPerdidas = 0;
+            auxDificil = auxDificil + 4; // si pierdes una vida, la velocidad del barquito disminuira en 4 unidades
         }
     }
 
@@ -329,6 +418,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         if (e.getKeyCode() == KeyEvent.VK_S) {
             sonidoActivado = !sonidoActivado; //activo o desactivo el sonido
+        }
+        
+        if (e.getKeyCode() == KeyEvent.VK_G) {
+            guarda = true;
+        }
+        
+        if (e.getKeyCode() == KeyEvent.VK_C) {
+            carga = true;
         }
     }
 
