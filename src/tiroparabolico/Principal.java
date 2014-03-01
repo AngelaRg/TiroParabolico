@@ -71,14 +71,15 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     private int auxDificil; // esta variable ayuda a bajar el movimiento del barquito
     private boolean golpeAbajo; // bandera para indicar cuando cae el rayito en el fondo inferior
     private boolean golpeBarco; // bandera para indicar cuando el barquito atrapa al rayito
-    
+
     private String nombreArchivo;    //Nombre del archivo.
     private boolean guarda; // bandera para identificar cuando guardar los datos del juego
     private boolean carga; // bandera para identificar cuando cargar los datos guardados al juego
-    
+    private boolean auxCarga; // bandera para cuidar que no se carguen datos cuando el archivo esta vacio
+
     private Vector vec;    // Objeto vector para agregar el puntaje.
     private String[] arr;    //Arreglo del archivo divido.
-        
+
     //Constructor (aqui se pone todo lo del init)
     public Principal() {
         setTitle("JFrame HolaMundo");
@@ -132,11 +133,12 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
         golpeAbajo = false;
         golpeBarco = false;
-        
+
         nombreArchivo = "Datos.txt";
         guarda = false;
         carga = false;
-        
+        auxCarga = false;
+
         vec = new Vector();
 
         Thread th = new Thread(this);
@@ -155,14 +157,14 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
 
             //si esta pausado no actualizas ni checas colision 
             if (!pausa) {
-                try{
-                   actualiza(); 
-                } catch(IOException e) {
+                try {
+                    actualiza();
+                } catch (IOException e) {
 
-                     // System.out.println("Error en " + ex.toString());
+                    // System.out.println("Error en " + ex.toString());
                 }
                 //actualiza();
-                
+
                 checaColision();
             }
             repaint(); // Se actualiza el <code>Applet</code> repintando el contenido.
@@ -177,7 +179,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
     }
 
     //funcion actualiza como cualquier otra
-    public void actualiza ()throws IOException {
+    public void actualiza() throws IOException {
         //Determina el tiempo que ha transcurrido desde que el Applet inicio su ejecuciÃ³n
         long tiempoTranscurrido = System.currentTimeMillis() - tiempoActual;
 
@@ -246,13 +248,13 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             rayito.setVelocidadInicial(Math.random() * (70 - 50) + 50);
             rayito.setVelocidadX(rayito.getVelocidadInicial() * (Math.cos(angulo)));
         }
-        
-        if (guarda){
+
+        if (guarda) {
             //variables del barquito
             double posx = barquito.getPosX();
             double posy = barquito.getPosY();
             int dir = barquito.getDireccion();
-            
+
             //variables del rayito
             double ang = angulo;
             double rx = rayito.getPosX();
@@ -260,39 +262,47 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             double temp = tiempo;
             double vel0 = rayito.getVelocidadInicial();
             double velx = rayito.getVelocidadX();
-            
+
             //otras variables importantes
             boolean choqueBar = golpeBarco;
             boolean limAbajo = golpeAbajo;
             boolean dispara = click;
-            
+
+            int sc = score;
+            int perdid = contPerdidas;
+            int vid = vidas;
+
             //guardar los datos en el archivo de texto
             PrintWriter fileOut = new PrintWriter(new FileWriter(nombreArchivo));
-            
+
             fileOut.println(posx);
             fileOut.println(posy);
             fileOut.println(dir);
-            
+
             fileOut.println(ang);
             fileOut.println(rx);
             fileOut.println(ry);
             fileOut.println(temp);
             fileOut.println(vel0);
             fileOut.println(velx);
-            
+
             fileOut.println(choqueBar);
             fileOut.println(limAbajo);
             fileOut.println(dispara);
             
+            fileOut.println(sc);
+            fileOut.println(perdid);
+            fileOut.println(vid);
+
             fileOut.close();
-            
+
         }
-        
-        if (carga){
-           // BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
+
+        if (carga && auxCarga) {
+            // BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
             // trata de ¿gurdar? los datos sin hacer casts usando los mismos nombres de variables que use en el guardar
             BufferedReader fileIn = new BufferedReader(new FileReader(nombreArchivo));
-                
+
             //leer variables del barquito del archivo
             double posx = Double.parseDouble(fileIn.readLine());
             double posy = Double.parseDouble(fileIn.readLine());
@@ -308,9 +318,13 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             boolean choqueBar = Boolean.parseBoolean(fileIn.readLine());
             boolean limAbajo = Boolean.parseBoolean(fileIn.readLine());
             boolean dispara = Boolean.parseBoolean(fileIn.readLine());
-             
-            fileIn.close();
             
+            int sc = Integer.parseInt(fileIn.readLine());
+            int perdid = Integer.parseInt(fileIn.readLine());
+            int vid = Integer.parseInt(fileIn.readLine());
+
+            fileIn.close();
+
             //Asignar los datos leídos a los valores del juego
             barquito.setPosX(posx);
             barquito.setPosY(posy);
@@ -324,6 +338,9 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             golpeBarco = choqueBar;
             golpeAbajo = limAbajo;
             click = dispara;
+            score = sc;
+            contPerdidas = perdid;
+            vidas = vid;
         }
 
         barquito.setDireccion(-1); // detiene al barquito
@@ -454,13 +471,15 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         if (e.getKeyCode() == KeyEvent.VK_S) {
             sonidoActivado = !sonidoActivado; //activo o desactivo el sonido
         }
-        
+
         if (e.getKeyCode() == KeyEvent.VK_G) {
             guarda = true;
+            auxCarga = true;
         }
-        
+
         if (e.getKeyCode() == KeyEvent.VK_C) {
             carga = true;
+
         }
     }
 
