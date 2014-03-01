@@ -14,7 +14,7 @@ public class Main {
     
     public static void main(String[] args) {
         // TODO code application logic here
-        //Crea un nuevo objeto JFrameHolaMundo
+        //Crea un nuevo objeto Principal
         Principal juego = new Principal();
         //Despliega la ventana en pantalla al hacerla visible
         juego.setVisible(true);

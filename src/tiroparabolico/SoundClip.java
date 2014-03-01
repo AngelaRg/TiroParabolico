@@ -35,47 +35,95 @@ public class SoundClip {
         }
     }
 
+    /**
+     * Constructor con parametros, que carga manda llamar a load esto carga el
+     * archivo de sonido.
+     *
+     * @param filename es el <code>String</code> del archivo.
+     */
     public SoundClip(String filename) {
 
         this();
         load(filename);
     }
 
+    /**
+     * Metodo modificador usado para modificar si el sonido se repite.
+     *
+     * @param _looping es un valor <code>boleano</code>.
+     */
     public void setLooping(boolean looping) {
 
         this.looping = looping;
     }
 
+    /**
+     * Metodo modificador usado para definir el numero de repeticiones.
+     *
+     * @param _repeat es un <code>entero</code> que es el numero de
+     * repeticiones.
+     */
     public void setRepeat(int repeat) {
 
         this.repeat = repeat;
     }
 
+    /**
+     * Metodo modificador que asigna un nombre al archivo.
+     *
+     * @param _filename es un <code>String</code> con el nombre del archivo.
+     */
     public void setFilename(String filename) {
 
         this.filename = filename;
     }
 
+    /**
+     * Metodo de acceso que regresa un objeto de tipo Clip
+     *
+     * @return clip es un <code>objeto Clip</code>.
+     */
     public Clip getClip() {
 
         return clip;
     }
 
+    /**
+     * Metodo de acceso que regresa un booleano para ver si hay repeticion.
+     *
+     * @return looping es un valor <code>boleano</code>.
+     */
     public boolean getLooping() {
 
         return looping;
     }
 
+    /**
+     * Metodo de acceso que regresa el numero de repeticiones.
+     *
+     * @return repeat es un valor <code>entero</code> con el numero de
+     * repeticiones.
+     */
     public int getRepeat() {
 
         return repeat;
     }
 
+    /**
+     * Metodo de acceso que regresa el nombre del archivo.
+     *
+     * @return filename es un <code>String</code> con el nombre del archivo.
+     */
     public String getFilename() {
 
         return filename;
     }
 
+    /**
+     * Metodo de acceso que regresa el url del archivo
+     *
+     * @param filename es un <code>String</code> con el nombre del archivo.
+     */
     private URL getURL(String filename) {
 
         URL url = null;
@@ -89,11 +137,22 @@ public class SoundClip {
         return url;
     }
 
+    /**
+     * Metodo que verifica si el archivo de audio esta cargado.
+     *
+     * @return sample es un <code>objeto sample</code>.
+     */
     public boolean isLoaded() {
 
         return (boolean) (sample != null);
     }
 
+    /**
+     * Metodo que carga el archivo de sonido.
+     *
+     * @param audiofile es un <code>String</code> con el nombre del archivo de
+     * sonido.
+     */
     public boolean load(String audiofile) {
 
         try {
@@ -117,6 +176,9 @@ public class SoundClip {
         }
     }
 
+    /**
+     * Metodo que reproduce el sonido.
+     */
     public void play() {
 
         if (!isLoaded()) {
@@ -132,6 +194,9 @@ public class SoundClip {
         }
     }
 
+    /**
+     * Metodo que detiene el sonido.
+     */
     public void stop() {
 
         clip.stop();

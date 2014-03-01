@@ -16,6 +16,12 @@ import java.net.URL;
 
 public class Nube extends Base {
 
+    /**
+     * Metodo constructor de la clase Nube
+     *
+     * @param posX es la posicion en el eje x
+     * @param posY es la posicion en el eje y
+     */
     public Nube(double posX, double posY) {
         super(posX, posY);
 

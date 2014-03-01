@@ -261,6 +261,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             int sc = score;
             int perdid = contPerdidas;
             int vid = vidas;
+            
+            boolean sonAct = sonidoActivado;
 
             //guardar los datos en el archivo de texto
             PrintWriter fileOut = new PrintWriter(new FileWriter(nombreArchivo));
@@ -282,6 +284,8 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             fileOut.println(sc);
             fileOut.println(perdid);
             fileOut.println(vid);
+            
+            fileOut.println(sonAct);
 
             fileOut.close();
         }
@@ -307,6 +311,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             int sc = Integer.parseInt(fileIn.readLine());
             int perdid = Integer.parseInt(fileIn.readLine());
             int vid = Integer.parseInt(fileIn.readLine());
+            boolean sonAct = Boolean.parseBoolean(fileIn.readLine());
 
             fileIn.close();
 
@@ -328,6 +333,7 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
             score = sc;
             contPerdidas = perdid;
             vidas = vid;
+            sonidoActivado = sonAct;
         }
         //apago los valores booleanos despues de haberlos usado para evitar ciclos
         barquito.setDireccion(-1); // detiene al barquito
@@ -486,12 +492,16 @@ public class Principal extends JFrame implements Runnable, KeyListener, MouseLis
         }
 
         if (e.getKeyCode() == KeyEvent.VK_G) { //Presiono tecla G
-            guarda = true; //registro el cambio
-            auxCarga = true;
+            if (!instrucciones) {
+                guarda = true; //registro el cambio
+                auxCarga = true;
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_C) { //Presiono teclo C
-            carga = true; //registro el cambio
+            if (!instrucciones) {
+                carga = true;
+            } //registro el cambio
 
         }
     }
